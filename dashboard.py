@@ -6,9 +6,7 @@ import time
 # pyrefly: ignore [missing-import]
 from kafka import KafkaConsumer
 
-# ==========================================
 # STREAMLIT PAGE SETUP
-# ==========================================
 st.set_page_config(
     page_title="Real-Time Stock Dashboard",
     page_icon="📈",
@@ -22,9 +20,7 @@ st.markdown("Consuming live events from **Apache Kafka** with `<200ms` latency."
 if 'stock_data' not in st.session_state:
     st.session_state.stock_data = pd.DataFrame()
 
-# ==========================================
 # KAFKA CONSUMER SETUP
-# ==========================================
 # Cache the consumer so it doesn't restart on every rerun
 @st.cache_resource
 def get_kafka_consumer():
@@ -42,9 +38,7 @@ def get_kafka_consumer():
 
 consumer = get_kafka_consumer()
 
-# ==========================================
 # UI LAYOUT
-# ==========================================
 st.markdown("### Live Prices")
 metrics_placeholder = st.empty()
 
@@ -58,9 +52,7 @@ stop_button = st.sidebar.button("Stop Live Feed")
 if not consumer:
     st.stop()
 
-# ==========================================
 # REAL-TIME UPDATE LOOP
-# ==========================================
 latest_prices = {}
 status_text = st.sidebar.empty()
 
