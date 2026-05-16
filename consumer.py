@@ -9,9 +9,7 @@ from kafka import KafkaConsumer
 # pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
 
-# ==========================================
 # STEP 1: SETUP AWS & ENVIRONMENT
-# ==========================================
 # Load environment variables from .env file
 load_dotenv()
 
@@ -24,9 +22,7 @@ s3_client = boto3.client(
 )
 S3_BUCKET = os.getenv('S3_BUCKET_NAME')
 
-# ==========================================
-# STEP 2: SETUP KAFKA CONSUMER
-# ==========================================
+# 2: SETUP KAFKA CONSUMER
 KAFKA_TOPIC = 'stock-events'
 
 # Interview Tip: Creating many small 1-2 KB files in S3 is a bad practice.
@@ -47,9 +43,8 @@ consumer = KafkaConsumer(
     group_id='stock-processor-group'
 )
 
-# ==========================================
 # STEP 3: READ, BATCH, AND UPLOAD
-# ==========================================
+
 def upload_to_s3(dataframe):
     """Convert Pandas DataFrame to Parquet and upload to S3"""
     
