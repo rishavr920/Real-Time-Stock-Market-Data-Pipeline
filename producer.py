@@ -5,39 +5,34 @@ from datetime import datetime, timezone
 # pyrefly: ignore [missing-import]
 from kafka import KafkaProducer
 
-# ==========================================
-# STEP 1: KAFKA PRODUCER SETUP
-# ==========================================
-# Ye producer Kafka se connect karega jo local Mac par run ho raha hai.
-# 'value_serializer' data ko bhejte waqt JSON mein convert karke bytes mein encode karta hai, 
-# kyunki Kafka sirf bytes samajhta hai.
+# 1: KAFKA PRODUCER SETUP
+# This producer will connect to Kafka running on the local Mac.
+# 'value_serializer' converts the data into JSON and encodes it into bytes before sending,
+# because Kafka only understands bytes.
 
 producer = KafkaProducer(
     bootstrap_servers=['localhost:9092'],
     value_serializer=lambda v: json.dumps(v).encode('utf-8')
 )
 
-# Kafka Topic ka naam. Agar ye topic nahi hai, toh Kafka isko automatically bana dega.
-KAFKA_TOPIC = 'stock-events'
+# Name of the Kafka topic. If this topic does not exist, Kafka will automatically create it.KAFKA_TOPIC = 'stock-events'
 
 # Kuch famous companies ke stock symbols
 SYMBOLS = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'META', 'NFLX', 'NVDA', 'BABA', 'V']
 
-# ==========================================
-# STEP 2: FAKE DATA GENERATOR
-# ==========================================
+# 2: FAKE DATA GENERATOR
 def generate_stock_tick():
     """Har call par ek naya fake stock price generate karta hai."""
     symbol = random.choice(SYMBOLS)
     
-    # Base price random 50 se 1000 ke beech mein
+    # Base price will be random between 50 se 1000.
     base_price = round(random.uniform(50.0, 1000.0), 2)
     
-    # Price fluctuation (Thoda upar ya neeche)
+    # For Price fluctuation
     fluctuation = round(random.uniform(-2.0, 2.0), 2)
     final_price = round(base_price + fluctuation, 2)
     
-    # Final data dictionary (JSON ban jayega)
+    # Final data dictionary (in JSON formatting)
     event = {
         'symbol': symbol,
         'price': final_price,
@@ -45,31 +40,28 @@ def generate_stock_tick():
     }
     return event
 
-# ==========================================
 # STEP 3: MAIN LOOP (Continuous Sending)
-# ==========================================
 if __name__ == "__main__":
-    print("🚀 Starting Stock Producer...")
-    print(f"📡 Sending real-time data to Kafka Topic: '{KAFKA_TOPIC}'")
-    print("🛑 Press Ctrl+C to stop.")
+    print("Starting Stock Producer...")
+    print(f"Sending real-time data to Kafka Topic: '{KAFKA_TOPIC}'")
+    print("Press Ctrl+C to stop.")
     print("-" * 50)
     
     try:
         while True:
-            # 1. Data banayein
+            # 1. creating fake data.
             stock_event = generate_stock_tick()
             
-            # 2. Data Kafka ko bhejein
+            # 2. sending data to kafka
             producer.send(KAFKA_TOPIC, value=stock_event)
-            
-            # 3. Screen par print karein taaki hume dikhe kya ho raha hai
+        
             print(f"Sent → {stock_event}")
             
-            # 4. 0.5 seconds ka gap (2 messages per second simulate karne ke liye)
+            # 4. Delay of 0.5 seconds (to simulate 2 messages per second)
             time.sleep(0.5) 
             
     except KeyboardInterrupt:
-        # Jab hum Ctrl+C dabayenge toh ye clean tarike se band hoga
+        # When we press Ctrl+C, the program will shut down gracefully.
         print("\n🛑 Stopping producer...")
         producer.close()
         print("✅ Producer stopped safely.")
