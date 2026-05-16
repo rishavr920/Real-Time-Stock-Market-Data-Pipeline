@@ -1,0 +1,17 @@
+# Python Virtual Env
+venv/
+__pycache__/
+*.pyc
+
+# Environment Variables
+.env
+
+# Interview prep / Notes
+interview_qna.md
+github
+
+# Streamlit secrets (if any)
+.streamlit/secrets.toml
+
+# OS Files
+.DS_Store
